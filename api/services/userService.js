@@ -1,7 +1,7 @@
 const User = require('../models/userModel');
 const ApiError = require('../untiles/apiError');
 
-
+// service người dùng
 const getUsers = async(query)=>{
     const queries = { ...query };
     const excludeFields = ['limit', 'sort', 'page', 'fields'];

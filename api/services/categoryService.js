@@ -1,7 +1,7 @@
 
 const Category = require('../models/categoryModel')
 const apiError = require('../untiles/apiError')
-
+// service của loại cây trồng
 const createCategories = async(data)=>{
     console.log('dhd');
       const {name,description} = data;

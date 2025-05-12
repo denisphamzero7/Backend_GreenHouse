@@ -1,6 +1,6 @@
 const Beds = require('../models/bedsModel')
 const apiError = require('../untiles/apiError')
-
+ // service của luống đất
 const createBedsService = async(data,file)=>{
   const {name}= data
   console.log('name :',name);
