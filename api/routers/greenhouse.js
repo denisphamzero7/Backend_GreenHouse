@@ -1,10 +1,12 @@
 const router =  require('express').Router();
 const controller = require('../controllers/greenhouseController')
 const uploadCloud= require('../config/cloudinary.config')
+const validate = require('../middlewares/validate')
+const greenhouseValidation = require('../validators/greenhouse.validation')
 const {verifyAccessToken,isAdminOrManager,isStaff } = require('../middlewares/verifytoken')
-router.post('/',[verifyAccessToken,isAdminOrManager],uploadCloud.single('image'),controller.creategreenhouse)
-router.put('/:grid',[verifyAccessToken,isAdminOrManager],uploadCloud.single('image'),controller.updateGreenhouse)
+router.post('/',validate(greenhouseValidation.updateGreenhouseSchema),[verifyAccessToken,isAdminOrManager],uploadCloud.single('image'),controller.creategreenhouse)
+router.put('/:grid',validate(greenhouseValidation.updateGreenhouseSchema),[verifyAccessToken,isAdminOrManager],uploadCloud.single('image'),controller.updateGreenhouse)
 router.get('/',controller.getGreenhouses)
-router.get('/:grid',controller.getGreenhouse)
-router.delete('/:grid',[verifyAccessToken,isAdminOrManager,isStaff],controller.deleteGreenhouse)
+router.get('/:grid',validate(greenhouseValidation.getGreenhouseByIdSchema),controller.getGreenhouse)
+router.delete('/:grid',validate(greenhouseValidation.deleteGreenhouseSchema),[verifyAccessToken,isAdminOrManager,isStaff],controller.deleteGreenhouse)
 module.exports = router;

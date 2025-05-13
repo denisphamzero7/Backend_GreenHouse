@@ -10,6 +10,9 @@ const CategorySchema = new mongoose.Schema({
     type: String,
     default: 'No description available',  
   },
+  vegetables:[{
+    type: mongoose.Schema.Types.ObjectId, ref: 'Vegetable' 
+  }]
 }, {
   timestamps: true,
   versionKey: false   
