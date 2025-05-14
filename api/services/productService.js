@@ -1,6 +1,7 @@
 const Product =  require('../models/greenhouseModel')
 
 const apiError = require('../untiles/apiError')
+// service của sản phẩm
 const createProduct = async(data,file)=>{
 
     const {name,quantity,greenhouse,beds,category,crops} = data;

@@ -1,6 +1,6 @@
 const Crops = require('../models/vegetablesModel')
 const apiError = require('../untiles/apiError')
-
+// service của cây trồng
 const createCropService = async(data,file)=>{
   const {name}= data
   console.log('name :',name);

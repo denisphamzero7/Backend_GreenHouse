@@ -6,7 +6,7 @@ const {
 const { sendOtpEmail } = require("../untiles/sendemail");
 const ApiError = require("../untiles/apiError");
 const { verify } = require("jsonwebtoken");
-
+//  authentication service
 const registerUser = async ({ email, name, password, phone, role }) => {
   if (!email || !name || !password || !phone) {
     throw new ApiError(400, "fields", "Missing required fields");

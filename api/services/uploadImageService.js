@@ -1,4 +1,4 @@
-// services/imageService.js
+// upload image
 
 const handleImageUpload = (file) => {
     if (!file) {
