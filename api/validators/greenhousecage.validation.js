@@ -1,50 +1,60 @@
 const Joi = require('joi');
 const { objectId } = require('./custom.validation');
 
-
+// Schema tạo mới Greenhouse Cage
 const createGreenhouseCageSchema = {
   body: Joi.object({
-    name: Joi.string().required().messages({
-      'any.required': 'Tên khung nhà kính là bắt buộc',
+    name: Joi.string().messages({
+      'any.required': 'Tên lồng nhà kính là bắt buộc',
       'string.empty': 'Tên không được để trống',
     }),
     image: Joi.any().optional(),
-    greenhouse: objectId().required().messages({
-      'any.required': 'ID nhà kính là bắt buộc',
+    greenhouse: Joi.string().custom(objectId).optional().messages({
+      'any.required': 'ID lồng nhà kính là bắt buộc',
     }),
-    beds: Joi.array().items(objectId()).optional().messages({
-      'array.items': 'Mỗi phần tử trong danh sách luống phải là ID hợp lệ',
-    }),
+    beds: Joi.array()
+      .items(Joi.string().custom(objectId))
+      .optional()
+      .messages({
+        'array.items': 'Mỗi phần tử trong danh sách luống phải là ID hợp lệ',
+      }),
   }),
 };
 
+// Schema cập nhật Greenhouse Cage
 const updateGreenhouseCageSchema = {
+  params: Joi.object({
+    cageid: Joi.string().required().custom(objectId).messages({
+      'any.required': 'ID khung nhà kính là bắt buộc',
+    }),
+  }),
   body: Joi.object({
     name: Joi.string().optional(),
     image: Joi.any().optional(),
-    greenhouse: objectId().optional(),
-    beds: Joi.array().items(objectId()).optional(),
-  }).min(1),
+    greenhouse: Joi.string().custom(objectId).optional(),
+    beds: Joi.array().items(Joi.string().custom(objectId)).optional(),
+  })
 };
 
-
+// Schema lấy chi tiết Greenhouse Cage theo ID
 const getGreenhouseCageByIdSchema = {
-  params: Joi.object({
-    cageId: objectId().required().messages({
+  params: Joi.object().keys({
+    cageid: Joi.string().required().custom(objectId).messages({
       'any.required': 'ID khung nhà kính là bắt buộc',
     }),
   }),
 };
 
+// Schema xóa Greenhouse Cage
 const deleteGreenhouseCageSchema = {
   params: Joi.object({
-    cageId: objectId().required(),
+    cageid: Joi.string().required().custom(objectId).messages({
+      'any.required': 'ID khung nhà kính là bắt buộc',
+    }),
   }),
 };
 
 module.exports = {
   createGreenhouseCageSchema,
   updateGreenhouseCageSchema,
-  getGreenhouseCageByIdSchema,
-  deleteGreenhouseCageSchema,
-};
+  getGreenhouseCageByIdSchema,deleteGreenhouseCageSchema}

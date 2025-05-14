@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const {password,objectId} = require('./custom.validation');
+const {password,objectId,phone} = require('./custom.validation');
 
 
 // validate  người dùng

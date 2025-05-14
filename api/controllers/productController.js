@@ -4,10 +4,11 @@ const asyncHandler = require('express-async-handler');
 // tạo sản phẩm
 const createProduct = asyncHandler(async(req, res)=>{
  
-  await  ProductService.createProduct(req.body,req.file)
+  const product = await  ProductService.createProduct(req.body,req.file)
   return res.status(200).json({
   success: true ? true :false,
   message :' tạo thành công sản phẩm',
+  product
  })
     
 });

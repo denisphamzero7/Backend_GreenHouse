@@ -9,5 +9,5 @@ router.post('/',validate(productvalidation.createProductSchema),uploadCloud.sing
 router.put('/:pid',validate(productvalidation.updateProductSchema),uploadCloud.single('image'),controller.updateProduct)
 router.get('/:pid',validate(productvalidation.updateProductSchema),controller.getProduct)
 router.get('/', controller.getProducts)
-router.delete('/',validate(productvalidation.deleteProductSchema), controller.deleteProduct)
+router.delete('/:pid',validate(productvalidation.deleteProduct), controller.deleteProduct)
 module.exports = router;

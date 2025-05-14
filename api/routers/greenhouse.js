@@ -8,5 +8,5 @@ router.post('/',validate(greenhouseValidation.updateGreenhouseSchema),[verifyAcc
 router.put('/:grid',validate(greenhouseValidation.updateGreenhouseSchema),[verifyAccessToken,isAdminOrManager],uploadCloud.single('image'),controller.updateGreenhouse)
 router.get('/',controller.getGreenhouses)
 router.get('/:grid',validate(greenhouseValidation.getGreenhouseByIdSchema),controller.getGreenhouse)
-router.delete('/:grid',validate(greenhouseValidation.deleteGreenhouseSchema),[verifyAccessToken,isAdminOrManager,isStaff],controller.deleteGreenhouse)
+router.delete('/:grid',validate(greenhouseValidation.deleteGreenhouseSchema),[verifyAccessToken,isAdminOrManager],controller.deleteGreenhouse)
 module.exports = router;

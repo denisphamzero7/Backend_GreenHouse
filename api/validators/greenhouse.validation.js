@@ -10,14 +10,16 @@ const createGreenhouseSchema = {
     }),
     image: Joi.any().optional(),
     operator: Joi.array()
-      .items(objectId())
+      .items(Joi.string().custom(objectId))
       .optional()
+      .default([])
       .messages({
         'array.items': 'Mỗi phần tử trong danh sách người quản lý phải là ID hợp lệ',
       }),
     cages: Joi.array()
-      .items(objectId())
+      .items(Joi.string().custom(objectId))
       .optional()
+      .default([])
       .messages({
         'array.items': 'Mỗi phần tử trong danh sách lồng phải là ID hợp lệ',
       }),
@@ -29,15 +31,15 @@ const updateGreenhouseSchema = {
   body: Joi.object({
     name: Joi.string().optional(),
     image: Joi.any().optional(),
-    operator: Joi.array().items(objectId()).optional(),
-    cages: Joi.array().items(objectId()).optional(),
-  }).min(1),
+    operator: Joi.array().items(Joi.string().custom(objectId)).optional().default([]),
+    cages: Joi.array().items(Joi.string().custom(objectId)).optional().default([]),
+  })
 };
 
 // Schema lấy chi tiết / xóa / cập nhật theo ID
 const getGreenhouseByIdSchema = {
-  params: Joi.object({
-    greenhouseId: objectId().required().messages({
+  params: Joi.object().keys({
+    grid: Joi.string().required().custom(objectId).messages({
       'any.required': 'ID nhà kính là bắt buộc',
     }),
   }),
@@ -46,7 +48,9 @@ const getGreenhouseByIdSchema = {
 // Schema xóa Greenhouse
 const deleteGreenhouseSchema = {
   params: Joi.object({
-    greenhouseId: objectId().required(),
+    grid: Joi.string().required().custom(objectId).messages({
+      'any.required': 'ID nhà kính là bắt buộc',
+    }),
   }),
 };
 

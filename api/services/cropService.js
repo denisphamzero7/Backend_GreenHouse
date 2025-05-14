@@ -39,19 +39,20 @@ const getCropsService = async (query) => {
   
     return { data, totalCount };
   };
-  const getCropById = async(bedId)=>{
-    return Crops.findById(bedId)
+  const getCropById = async(cropid)=>{
+    return Crops.findById(cropid)
   }
-  const updateCrops = async(cropId,updatedata,file)=>{
+  const updateCrops = async(cropid,updatedata,file)=>{
     if(file){
       updatedata.image = file.path
     }
-    const updateCrops = await Crops.findByIdAndUpdate(cropId,updatedata,{new:true})
+    const updateCrops = await Crops.findByIdAndUpdate(cropid,updatedata,{new:true})
+    console.log('update',updateCrops);
     return updateCrops
   }
 
-  const deleteCrops = async(cropId)=>{
-    const Crop = await Crops.findByIdAndDelete(cropId)
+  const deleteCrops = async(cropid)=>{
+    const Crop = await Crops.findByIdAndDelete(cropid)
     if(!Crop) throw new apiError(400,'cropId','không thấy cây trồng')
     return bed
   }
