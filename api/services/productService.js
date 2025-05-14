@@ -1,4 +1,4 @@
-const Product =  require('../models/greenhouseModel')
+const Product =  require('../models/productModel')
 
 const apiError = require('../untiles/apiError')
 // service của sản phẩm
@@ -8,7 +8,7 @@ const createProduct = async(data,file)=>{
     const existing = await Product.findOne({name})
     if(existing) throw new apiError(400,'name','tên này đã tồn tại')
     const image = file ? file.path : null;
-    const newProduct = await Product.create({data,image})
+    const newProduct = await Product.create({name,quantity,greenhouse,beds,category,crops,image})
     return newProduct
 }
 const getProducts= async (query) => {
@@ -28,7 +28,7 @@ const getProducts= async (query) => {
         formattedQueries.name = { $regex: new RegExp(query.name, 'i') };
     }
 
-    let queryCommand = Product.find(formattedQueries).populate('greenhouse', 'beds category crops');
+    let queryCommand = Product.find(formattedQueries)
 
     if (query.sort) {
         queryCommand = queryCommand.sort(query.sort.split(',').join(' '));
@@ -51,7 +51,7 @@ const getProducts= async (query) => {
 };
 
 const getProduct = async(pid)=>{
-    const data = Product.findById(grid).populate('greenhouse', 'beds category crops')
+    const data = Product.findById(pid)
     return data
 }
 const updateProduct= async(pid,data,file)=>{
@@ -62,7 +62,7 @@ const updateProduct= async(pid,data,file)=>{
   if (!existing) {
     throw new apiError(400,'data','Không tìm thấy lồng kính cần cập nhật');
   }
-    const updatedata = await Product.findByIdAndUpdate(grid,data,{new:true})
+    const updatedata = await Product.findByIdAndUpdate(pid,data,{new:true})
     return updatedata
 }
 const deleteProduct = async(pid)=>{

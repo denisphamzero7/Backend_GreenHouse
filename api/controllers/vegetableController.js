@@ -37,11 +37,13 @@ const getCropById = asyncHandler(async (req, res) => {
 // Update a crop
 const updateCrop = asyncHandler(async (req, res) => {
   const {cropid} = req.params
-  const {data} = req.body
-  const updateCrop = CropService.updateCrops(cropid,{data})
+  const {updatedata} = req.body;
+  const updateCrop = await CropService.updateCrops(cropid,updatedata,req.file)
+ 
   return res.status(200).json({
     success: true,
-    updateCrop
+    updateCrop,
+    message:'update cây thành công'
   })
 });
 
