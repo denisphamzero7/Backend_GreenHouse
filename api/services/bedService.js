@@ -39,18 +39,18 @@ const getBedsService = async (query) => {
   
     return { data, totalCount };
   };
-  const getBedById = async(bedId)=>{
-    return Beds.findById(bedId)
+  const getBedById = async(bedid)=>{
+    return Beds.findById(bedid)
   }
-  const updateBed = async(bedId,updatedata,file)=>{
+  const updateBed = async(bedid,updatedata,file)=>{
     if(file){
       updatedata.image = file.path
     }
-    const updateBed = await Beds.findByIdAndUpdate(bedId,updatedata,{new:true})
+    const updateBed = await Beds.findByIdAndUpdate(bedid,updatedata,{new:true})
     return updateBed
   }
-  const updateBedStatus = async(bedId,crops)=>{
-    const bed = await Beds.findById(bedId)
+  const updateBedStatus = async(bedid,crops)=>{
+    const bed = await Beds.findById(bedid)
     if(!bed)  throw new apiError(400,'bedId','không tìm thấy luống rau này')
     if (bed.status !== 'empty' && status === 'planted') {
       throw new apiError(400, 'status', 'Luống rau đang trồng, bạn không thể thay đổi trạng thái');
@@ -60,8 +60,8 @@ const getBedsService = async (query) => {
     await bed.save();
     return bed;
   }
-  const deleteBed = async(bedId)=>{
-    const bed = await Beds.findByIdAndDelete(bedId)
+  const deleteBed = async(bedid)=>{
+    const bed = await Beds.findByIdAndDelete(bedid)
     if(!bed) throw new apiError(400,'bedId','không thấy luống rau')
     return bed
   }
