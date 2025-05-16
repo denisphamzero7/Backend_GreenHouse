@@ -27,7 +27,7 @@ const notificationSchema = new mongoose.Schema(
     },
     message: {
       type: String,
-     
+
       trim: true,
     },
     isRead: {

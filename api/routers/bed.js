@@ -5,9 +5,12 @@ const {verifyAccessToken,isAdminOrManager,isStaff } = require('../middlewares/ve
 const validate = require('../middlewares/validate')
 const bedvalidation = require('../validators/beds.validation')
 router.post('/',validate(bedvalidation.createBedSchema),uploadCloud.single('image'),controller.createBed)
+router.post('/:bedid/log',[verifyAccessToken],controller.addMonitoringLog)
 router.put('/:bedid',validate(bedvalidation.updateBedSchema),uploadCloud.single('image'),controller.updateBed)
 router.put('/:bedid',validate(bedvalidation.updateBedStatusSchema),uploadCloud.single('image'),controller.bedstatus)
 router.get('/',controller.getBeds)
+router.get('/:bedid/log',[verifyAccessToken],controller.getMonitoringLogs)
 router.get('/:bedid',validate(bedvalidation.getBedByIdSchema),controller.getBed)
 router.delete('/',controller.deleteBed)
+router.delete('/:bedid/:logid',[verifyAccessToken],controller.deleteLogbyId)
 module.exports = router;

@@ -48,7 +48,7 @@ const deleteNotification = asyncHandler(async(req,res)=>{
   });
 })
 const updateNotification = asyncHandler(async (req, res) => {
-  const { noId } = req.params; // notificationId
+  const { noId } = req.params;
   const userId = req.user._id;
   const updateData = {};
   ['greenhouseId', 'cageId', 'taskType', 'bedId', 'message'].forEach(field => {
