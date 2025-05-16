@@ -99,6 +99,7 @@ const getMonitoringLogs = asyncHandler (async(req,res) => {
 const deleteLogbyId = asyncHandler(async(req,res)=>{
   const { bedid, logid } = req.params;
   const bed = await bedsService.deleteLogbyId(bedid,logid);
+  if(!bed) throw new ApiError(400,'bed','bed không tồn tại')
   const io = getIO();
   io.to(bedid.toString()).emit('log_deleted', { bedId: bedid, logId: logid });
   return res.status(200).json({

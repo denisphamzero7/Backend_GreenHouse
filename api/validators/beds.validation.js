@@ -84,11 +84,29 @@ const updateBedStatusSchema = {
   }),
 })
 };
+const createlogSchema = {
+  params: Joi.object().keys({
+    bedid: Joi.string().required().custom(objectId),
+  }),
+  body: Joi.object({
+    status: Joi.string().required().valid('normal', 'warning', 'critical')
+    .messages({
+      'any.required': 'Trường "status" là bắt buộc',
+      'any.only': 'Giá trị "status" không hợp lệ. Phải là một trong: empty, planted, harvested, under_renovation'
+  }),
+})
+};
 
 // Schema cho xóa Bed
 const deleteBedSchema = {
   params: Joi.object({
     bedid: Joi.string().required().custom(objectId),
+  }),
+};
+const deletelogschema = {
+  params: Joi.object({
+    bedid: Joi.string().required().custom(objectId),
+    logid:Joi.string().required().custom(objectId)
   }),
 };
 
@@ -98,5 +116,6 @@ module.exports = {
   updateBedSchema,
   updateBedStatusSchema,
   deleteBedSchema,
-  getBedByIdSchema
+  getBedByIdSchema,
+  deletelogschema,createlogSchema
 };

@@ -183,18 +183,18 @@ const getMonitoringLogs = async (bedid, query) => {
   return { data, totalCount };
 };
 const deleteLogbyId = async(bedid,logid)=>{
-  const bed = await Beds.findById(bedid);
-  if (!bed) {
-    throw new apiError(404, "bedId", "Không tìm thấy luống rau");
+ 
+  const updatedBed = await Beds.findByIdAndUpdate(
+    bedid,
+    { $pull: { monitoringLogs: { _id:logid} } }, // Xóa phần tử có _id == logId
+    { new: true } // Trả về dữ liệu đã cập nhật
+  );
+  if (!updatedBed) {
+    throw new Error('Bed không tồn tại');
   }
-  const logIndex = bed.monitoringLogs.findIndex(log => log._id.toString() === logid.toString());
-  if (logIndex === -1) {
-    throw new apiError(404, "logId", "Không tìm thấy bản ghi giám sát");   
-  }
-  bed.monitoringLogs.splice(logIndex, 1);
-    await bed.save();
-    return bed;
 
+  return updatedBed;
+ 
 }
 module.exports = {
   createBedsService,
