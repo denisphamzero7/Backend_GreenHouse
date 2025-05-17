@@ -305,14 +305,14 @@ const deleteLogbyId = async(bedid,logid)=>{
   return updatedBed;
  
 }
-const deleteHistoryLogById = async (bedid, logid) => {
-  if (!mongoose.Types.ObjectId.isValid(bedId) || !mongoose.Types.ObjectId.isValid(logid)) {
+const deleteHistoryLogById = async (bedid,historyid) => {
+  if (!mongoose.Types.ObjectId.isValid(bedid) || !mongoose.Types.ObjectId.isValid(historyid)) {
     throw new apiError(400, "id", "ID không hợp lệ");
   }
 
   const updatedBed = await Beds.findByIdAndUpdate(
     bedid,
-    { $pull: { historyLogs: { _id: logid } } },
+    { $pull: { historyLogs: { _id: historyid} } },
     { new: true }
   );
 
@@ -321,9 +321,9 @@ const deleteHistoryLogById = async (bedid, logid) => {
   }
 
 
-  const existed = updatedBed.historyLogs.some((log) => log._id.equals(logid));
+  const existed = updatedBed.historyLogs.some((log) => log._id.equals(historyid));
   if (existed) {
-    throw new apiError(404, "logId", "Xóa lịch sử thu hoạch thất bại");
+    throw new apiError(404, "historyid", "Xóa lịch sử thu hoạch thất bại");
   }
 
   return updatedBed;

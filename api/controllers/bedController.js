@@ -117,12 +117,11 @@ const deleteLogbyId = asyncHandler(async(req,res)=>{
   });
 })
 const deleteHistoryLogById = asyncHandler(async (req, res) => {
-  const { bedid, logid } = req.params;
-  const updatedBed = await bedsService.deleteHistoryLogById(bedid, logid);
+  const { bedid,historyid} = req.params;
+  const updatedBed = await bedsService.deleteHistoryLogById(bedid,historyid);
 
-  // phát sự kiện xóa qua socket
   const io = getIO();
-  io.to(bedid.toString()).emit("history_log_deleted", { bedid, logid });
+  io.to(bedid.toString()).emit("history_log_deleted", { bedid,historyid });
 
   return res.status(200).json({
     success: true,
