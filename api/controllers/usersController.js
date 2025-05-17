@@ -3,7 +3,7 @@ const authService = require("../services/authService");
 const userService = require("../services/userService");
 const ApiError = require("../untiles/apiError");
 const { verify } = require("jsonwebtoken");
-
+const {getIO} = require('../config/socket')
 // Đăng ký tài khoản
 const register = asyncHandler(async (req, res) => {
   const newUser = await authService.registerUser(req.body);
@@ -17,7 +17,14 @@ const register = asyncHandler(async (req, res) => {
 // Đăng nhập
 const login = asyncHandler(async (req, res) => {
   const { user, accessToken, refreshToken } = await authService.loginUser(req.body);
-
+   const io = getIO();
+   const safeUser = {
+    user, accessToken, refreshToken 
+  };
+  
+  
+  io.emit('user_login_success', safeUser);
+  
   // Lưu refresh token vào cookie
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
@@ -34,10 +41,8 @@ const login = asyncHandler(async (req, res) => {
 
 // Refresh access token
 const refreshToken = asyncHandler(async (req, res) => {
-  const { refreshToken: oldToken } = req.cookies;
-  if (!oldToken) throw new ApiError(403, "token", "Hiện chưa có token");
-
-  const newAccessToken = await authService.refreshAccessToken(oldToken);
+  const cookies = req.cookies;
+  const { newAccessToken } = await authService.refreshAccessToken(cookies);
   res.status(200).json({
     success: true,
     newAccessToken,

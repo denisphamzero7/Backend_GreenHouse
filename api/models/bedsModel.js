@@ -57,6 +57,27 @@ const BedSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  historyLogs: [{
+    crops: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Vegetable',
+    }],
+    cropCycle: {
+      startDate: Date,
+      harvestDate: Date,
+    },
+    status: {
+      type: String,
+      enum: ['harvested', 'aborted'],
+      default: 'harvested',
+    },
+    note: String,
+    createdAt: {
+      type: Date,
+      default: Date.now
+    }
+  }]
+
 }, {
   timestamps: true,
   versionKey: false 

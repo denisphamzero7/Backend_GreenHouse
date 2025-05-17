@@ -6,6 +6,7 @@ const productroute = require("./product")
 const userroute = require("./user")
 const categoryroute = require("./category")
 const uploadImage = require("./uploadimage")
+const notification = require("./notification")
 const {notFound, errorHandler} = require("../middlewares/errorhandler")
 const introuter = (app)=>{
     app.use('/api/greenhouse',greenhouseroute)
@@ -16,6 +17,7 @@ const introuter = (app)=>{
     app.use('/api/product',productroute)
     app.use('/api/user',userroute)
     app.use('/api/upload',uploadImage)
+    app.use('/api/notification',notification)
     app.use(notFound)
     app.use(errorHandler)
 }

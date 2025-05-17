@@ -4,6 +4,7 @@ const asyncHandler = require("express-async-handler");
 const bedsService = require("../services/bedService");
 const ApiError = require("../untiles/apiError");
 const pick = require("../untiles/pick")
+const { getIO } = require('../config/socket');
 // tạo luống đất
 
 const createBed = asyncHandler(async (req, res) => {
@@ -62,10 +63,18 @@ const bedstatus = asyncHandler(async (req, res) => {
     bed: updateBed,
   });
 });
+const getBedHistoryLogs = asyncHandler(async (req, res) => {
+  const { bedid } = req.params;
+  const history = await bedsService.getBedHistoryLogs(bedid, req.query);
+  return res.status(200).json({
+    success: true,
+    data: history,
+  });
+});
 // xoá luống rau
 
 const deleteBed = asyncHandler(async (req, res) => {
-  try {
+  
     const { bedid } = req.params;
     const bed = bedsService.deleteBed(bedid)
     return res.status(200).json({
@@ -73,9 +82,52 @@ const deleteBed = asyncHandler(async (req, res) => {
       message: "Delete successful",
       bed: bed,
     });
-  } catch (error) {
-    return res.status(500).json({ message: "Error deleting bed", error });
-  }
+  
+});
+const addMonitoringLog = asyncHandler(async (req, res) => {
+
+    const { bedid } = req.params;
+    const { status, remarks } = req.body;
+    const bed =await bedsService.addMonitoringLog(bedid,{status,remarks})
+    const io = getIO();
+    io.to(bedid.toString()).emit('new_monitoring_log', bed);
+    return res.status(201).json({
+      success: true,
+      data:bed,
+      message: 'Thêm log giám sát thành công'
+    })
+});
+const getMonitoringLogs = asyncHandler (async(req,res) => {
+  const { bedid } = req.params;
+   const {data,totalCount } = await bedsService.getMonitoringLogs(bedid,req.query)
+   return res.status(200).json({
+    data,totalCount
+   })
+});
+const deleteLogbyId = asyncHandler(async(req,res)=>{
+  const { bedid, logid } = req.params;
+  const bed = await bedsService.deleteLogbyId(bedid,logid);
+  if(!bed) throw new ApiError(400,'bed','bed không tồn tại')
+  const io = getIO();
+  io.to(bedid.toString()).emit('log_deleted', { bedId: bedid, logId: logid });
+  return res.status(200).json({
+    success: true,
+    data: bed,
+    message: 'Xoá log giám sát thành công',
+  });
+})
+const deleteHistoryLogById = asyncHandler(async (req, res) => {
+  const { bedid,historyid} = req.params;
+  const updatedBed = await bedsService.deleteHistoryLogById(bedid,historyid);
+
+  const io = getIO();
+  io.to(bedid.toString()).emit("history_log_deleted", { bedid,historyid });
+
+  return res.status(200).json({
+    success: true,
+    data: updatedBed,
+    message: "Xóa lịch sử thu hoạch thành công",
+  });
 });
 module.exports = {
   createBed,
@@ -84,4 +136,9 @@ module.exports = {
   updateBed,
   bedstatus,
   deleteBed,
+  addMonitoringLog,
+  getMonitoringLogs,
+  deleteLogbyId,
+  getBedHistoryLogs,
+  deleteHistoryLogById
 };

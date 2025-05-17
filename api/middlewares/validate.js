@@ -1,4 +1,3 @@
-
 const ApiError = require('../untiles/apiError');
 
 const validate = (schema) => (req, res, next) => {
@@ -9,27 +8,23 @@ const validate = (schema) => (req, res, next) => {
   };
 
   const sections = ['body', 'query', 'params'];
-  const errors = [];
 
-  for (const section of sections) {
-    if (!schema[section]) continue;
-    const { value, error } = schema[section].validate(req[section], options);
-    if (error) {
-     
-      for (const detail of error.details) {
-
-        throw new ApiError(
-          400,
-          detail.context.key,
-          detail.message
-        );
+  try {
+    for (const section of sections) {
+      if (!schema[section]) continue;
+      const { value, error } = schema[section].validate(req[section], options);
+      if (error) {
+        const message = error.details.map((d) => d.message).join(', ');
+        throw new ApiError(400, 'ValidationError', message);
+      } else {
+        req[section] = value;
       }
-    } else {
-      req[section] = value;
     }
-  }
 
-  next();
+    next(); // chỉ gọi khi mọi thứ OK
+  } catch (err) {
+    next(err); // để error middleware xử lý
+  }
 };
 
 module.exports = validate;
