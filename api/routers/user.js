@@ -8,7 +8,7 @@ const auth = require('../validators/auth.validation')
 const user = require('../validators/user.validation')
 router.post('/register',validate(auth.register),controller.register)
 router.post('/login',validate(auth.login),controller.login)
-router.post('/refreshtoken',validate(auth.refreshTokens),controller.refreshToken)
+router.post('/refreshtoken',[verifyAccessToken],controller.refreshToken)
 router.post('/resendotp',controller.resendOTP)
 router.post('/verifyotp',controller.verifyOTP)
 router.post('/logout',validate(auth.logout), verifyAccessToken, controller.logout); 

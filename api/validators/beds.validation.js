@@ -11,9 +11,9 @@ const monitoringLogSchema = {
 };
 const createBedSchema = {
   body: Joi.object({
-    name: Joi.string().required(),
+    name: Joi.string(),
     image: Joi.any().optional(), // Image sẽ được upload qua multipart/form-data
-    size: Joi.number().positive().required(),
+    size: Joi.number().positive(),
     status: Joi.string()
       .valid('empty', 'planted', 'harvested', 'under_renovation')
       .default('empty'),

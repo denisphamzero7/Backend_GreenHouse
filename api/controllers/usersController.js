@@ -41,10 +41,8 @@ const login = asyncHandler(async (req, res) => {
 
 // Refresh access token
 const refreshToken = asyncHandler(async (req, res) => {
-  const { refreshToken: oldToken } = req.cookies;
-  if (!oldToken) throw new ApiError(403, "token", "Hiện chưa có token");
-
-  const newAccessToken = await authService.refreshAccessToken(oldToken);
+  const cookies = req.cookies;
+  const { newAccessToken } = await authService.refreshAccessToken(cookies);
   res.status(200).json({
     success: true,
     newAccessToken,

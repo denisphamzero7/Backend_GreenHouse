@@ -65,12 +65,30 @@ const logoutUser = async (userId) => {
   user.refreshToken = null;
   await user.save();
 };
-const refreshAccessToken =async(oldToken)=>{
-    if (!oldToken) throw new ApiError(403, 'token', 'No refresh token');
-  const payload = verify(oldToken, process.env.JWT_SECRET);
-  const user = await User.findOne({ _id: payload._id, refreshToken: oldToken });
-  if (!user) throw new ApiError(403, 'token', 'Invalid token');
-  return generateAccessToken(user._id, user.role);
+const refreshAccessToken =async(cookies)=>{
+  if (!cookies || !cookies.refreshToken) {
+    throw new ApiError(403, 'Chưa có refresh token');
+  }
+
+  let payload;
+  try {
+    payload = verify(cookies.refreshToken, process.env.JWT_SECRET);
+    console.log(payload);
+  } catch (err) {
+    throw new ApiError(403, 'Refresh token không hợp lệ');
+  }
+
+  const user = await User.findOne({
+    _id: payload._id,
+    refreshToken: cookies.refreshToken,
+  });
+
+  if (!user) {
+    throw new ApiError(403, 'Token không hợp lệ');
+  }
+
+  const newAccessToken = generateAccessToken({ _id: user._id, role: user.role });
+  return { newAccessToken };
 }
 const sendOTP= async(email)=>{
     if (!email) throw new ApiError(400, 'email', 'Email required');

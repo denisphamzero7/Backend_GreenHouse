@@ -63,6 +63,14 @@ const bedstatus = asyncHandler(async (req, res) => {
     bed: updateBed,
   });
 });
+const getBedHistoryLogs = asyncHandler(async (req, res) => {
+  const { bedid } = req.params;
+  const history = await bedsService.getBedHistoryLogs(bedid, req.query);
+  return res.status(200).json({
+    success: true,
+    data: history,
+  });
+});
 // xoá luống rau
 
 const deleteBed = asyncHandler(async (req, res) => {
@@ -108,6 +116,20 @@ const deleteLogbyId = asyncHandler(async(req,res)=>{
     message: 'Xoá log giám sát thành công',
   });
 })
+const deleteHistoryLogById = asyncHandler(async (req, res) => {
+  const { bedid, logid } = req.params;
+  const updatedBed = await bedsService.deleteHistoryLogById(bedid, logid);
+
+  // phát sự kiện xóa qua socket
+  const io = getIO();
+  io.to(bedid.toString()).emit("history_log_deleted", { bedid, logid });
+
+  return res.status(200).json({
+    success: true,
+    data: updatedBed,
+    message: "Xóa lịch sử thu hoạch thành công",
+  });
+});
 module.exports = {
   createBed,
   getBeds,
@@ -117,5 +139,7 @@ module.exports = {
   deleteBed,
   addMonitoringLog,
   getMonitoringLogs,
-  deleteLogbyId
+  deleteLogbyId,
+  getBedHistoryLogs,
+  deleteHistoryLogById
 };
