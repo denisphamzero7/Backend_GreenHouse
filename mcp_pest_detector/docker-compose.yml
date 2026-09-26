@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  mcp-pest-detector:
+    build: .
+    container_name: greenhouse_mcp_pest_detector
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    network_mode: "host" # Allows connecting directly to localhost:8080 of Backend_GreenHouse
