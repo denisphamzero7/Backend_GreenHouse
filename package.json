@@ -31,7 +31,7 @@
     "web3": "^4.16.0"
   },
   "scripts": {
-    "start": "nodemon api/index.js",
-    "dev": "nodemon scrape.js"
+    "start": "node api/index.js",
+    "dev": "nodemon api/index.js"
   }
 }

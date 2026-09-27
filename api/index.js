@@ -14,9 +14,9 @@ const app = express();
 // Kết nối cơ sở dữ liệu
 dbconnect();
 
-// Cấu hình CORS
+// Cấu hình CORS: Cho phép truy cập từ Frontend React local hoặc bất kỳ domain nào khi deploy
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: process.env.CLIENT_URL || true,
   credentials: true,
 }));
 
@@ -35,8 +35,8 @@ introuter(app);
 const httpServer = http.createServer(app);
 initSocket(httpServer);
 
-// Khởi chạy server
-const HTTP_PORT = process.env.HTTP_PORT || 8080;
-httpServer.listen(HTTP_PORT, () => {
-  console.log(`HTTP Server is running on http://localhost:${HTTP_PORT}`);
+// Khởi chạy server: Ưu tiên process.env.PORT do nền tảng Cloud (Render/Railway) tự cấp phát
+const HTTP_PORT = process.env.PORT || process.env.HTTP_PORT || 8080;
+httpServer.listen(HTTP_PORT, '0.0.0.0', () => {
+  console.log(`HTTP Server is running on port: ${HTTP_PORT}`);
 });
