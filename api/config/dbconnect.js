@@ -1,12 +1,12 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const initBotAccount = require('./initBotAccount');
+
 const dbConnect = async () => {
     try {
         const mongodbUri = process.env.MONGODB_URL;
-        // console.log(typeof process.env.MONGODB_URL, process.env.MONGODB_URL);
         await mongoose.connect(mongodbUri);
-        useUnifiedTopology = true;
-        useNewUrlParser = true;
-        // console.log('connect to mongodb: ', mongodbUri);
+        console.log('MongoDB connected successfully');
+        await initBotAccount();
     } catch (error) {
         console.log('db connect error');
         throw new Error(error);

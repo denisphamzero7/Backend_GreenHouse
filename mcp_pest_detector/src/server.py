@@ -67,7 +67,8 @@ async def sync_diagnosis_to_greenhouse(
     bed_id: str,
     diagnosis_json_str: str,
     greenhouse_id: str = "",
-    cage_id: str = ""
+    cage_id: str = "",
+    user_access_token: str = ""
 ) -> str:
     """
     Đồng bộ kết quả chẩn đoán sâu bệnh từ AI vào hệ thống Backend Nhà Kính (Server_GreenHouse).
@@ -78,6 +79,7 @@ async def sync_diagnosis_to_greenhouse(
         diagnosis_json_str: Chuỗi JSON kết quả trả về từ tool 'diagnose_plant_disease'.
         greenhouse_id: (Tùy chọn) Mã ID của nhà kính chứa luống rau.
         cage_id: (Tùy chọn) Mã ID của lồng kính.
+        user_access_token: (Tùy chọn) Token người dùng đang thao tác. Nếu để trống, hệ thống sẽ tự động dùng Bot Service Account.
 
     Returns:
         JSON string thông báo trạng thái đồng bộ thành công vào cơ sở dữ liệu và phát Socket.io.
@@ -92,7 +94,8 @@ async def sync_diagnosis_to_greenhouse(
             bed_id=bed_id,
             diagnosis_result=diagnosis_data,
             greenhouse_id=greenhouse_id or None,
-            cage_id=cage_id or None
+            cage_id=cage_id or None,
+            user_token=user_access_token or None
         )
         return json.dumps(res, ensure_ascii=False, indent=2)
     except Exception as e:
