@@ -102,7 +102,4 @@ Hệ thống API được phân rã thành các luồng nghiệp vụ chi tiết
 7. [Hướng Dẫn Chuyển Đổi & Thiết Kế MySQL](file:///c:/xampp/htdocs/Server_GreenHouse/docs/mysql_migration.md)
 8. [Quy Trình Quản Lý & Kiểm Thử API Chuẩn](file:///c:/xampp/htdocs/Server_GreenHouse/docs/workflow_api_testing.md)
 9. [Luồng API Chẩn Đoán Sâu Bệnh Bằng AI](file:///c:/xampp/htdocs/Server_GreenHouse/docs/diagnosis_api.md)
-
-
-
-
+10. [Luồng API Truy Xuất Nguồn Gốc & Blockchain](file:///c:/xampp/htdocs/Server_GreenHouse/docs/traceability_blockchain_api.md)
