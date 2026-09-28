@@ -15,8 +15,10 @@ Mọi API thay đổi dữ liệu sản phẩm (Thêm, Sửa, Xóa) đều yêu 
 
 | Phương thức | Endpoint | Middleware / Quyền | Validate Schema | Mô tả |
 | :--- | :--- | :--- | :--- | :--- |
-| **POST** | `/api/product` | `verifyAccessToken` + `isAdminOrManager` | `productvalidation.createProductSchema` | Tạo lô sản phẩm mới (kèm ảnh upload) |
+| **POST** | `/api/product` | `verifyAccessToken` + `isAdminOrManager` | `productvalidation.createProductSchema` | Tạo lô sản phẩm mới (tự sinh mã QR & ghi nhận Blockchain) |
 | **PUT** | `/api/product/:pid` | `verifyAccessToken` + `isAdminOrManager` | `productvalidation.updateProductSchema` | Cập nhật thông tin/trạng thái sản phẩm |
+| **GET** | `/api/product/trace/:pid` | Công khai (Quét mã QR) | - | **Truy xuất nguồn gốc toàn diện (5 Giai đoạn Timeline)** |
+| **GET** | `/api/product/verify-blockchain/:pid` | Công khai | - | **Kiểm chứng tính toàn vẹn chống gian lận dữ liệu với Blockchain** |
 | **GET** | `/api/product/:pid` | Công khai | `productvalidation.updateProductSchema` | Lấy chi tiết thông tin 1 sản phẩm |
 | **GET** | `/api/product` | Công khai | - | Lấy danh sách sản phẩm (có lọc, phân trang) |
 | **DELETE** | `/api/product/:pid` | `verifyAccessToken` + `isAdminOrManager` | `productvalidation.deleteProduct` | Xóa vĩnh viễn sản phẩm |
@@ -30,6 +32,7 @@ Sản phẩm được lưu trữ trong MongoDB với các trường thông tin �
 ```javascript
 {
   name: String,            // Tên sản phẩm / Tên lô hàng (Bắt buộc)
+  batchCode: String,       // Mã lô hàng tự động (VD: BATCH-20260928-XALACH-9B8A)
   type: String,            // Loại sản phẩm
   crops: ObjectId,         // Giống cây trồng gieo hạt (Ref: Vegetable)
   category: ObjectId,      // Danh mục nhóm rau củ (Ref: Category)
@@ -42,7 +45,17 @@ Sản phẩm được lưu trữ trong MongoDB với các trường thông tin �
   seedOrigin: String,      // Nguồn gốc hạt giống gieo trồng
   status: String,          // Trạng thái chuỗi cung ứng: 'processing', 'packaged', 'shipped', 'delivered'
   notes: String,           // Ghi chú đóng gói / giao nhận
-  image: String            // Đường dẫn hình ảnh thực tế lưu trên Cloudinary
+  image: String,           // Đường dẫn hình ảnh thực tế lưu trên Cloudinary
+  qrCode: String,          // Mã QR Code dạng Base64 DataURL (in tem nhãn dán bao bì)
+  blockchain: {
+    dataHash: String,      // Mã băm SHA-256 dữ liệu phả hệ & kiểm định AI
+    txHash: String,        // Mã giao dịch trên Blockchain
+    contractAddress: String,// Địa chỉ Smart Contract
+    network: String,       // Mạng chuỗi khối (Sepolia Testnet / Provenance Ledger)
+    blockNumber: Number,   // Số thứ tự khối
+    recordedAt: Date,      // Thời điểm ghi nhận bất biến
+    isVerified: Boolean    // Trạng thái xác thực
+  }
 }
 ```
 

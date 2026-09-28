@@ -44,4 +44,20 @@ const isAdminOrManager = asyncHandler((req, res, next) => {
       });
     }
   });
-module.exports ={ verifyAccessToken,isAdminOrManager,isStaff  }
+
+  // Middleware tùy chọn: Nếu có token thì giải mã lấy thông tin user, nếu không có token thì vẫn cho qua (cho phép public)
+  const optionalVerifyToken = asyncHandler(async (req, res, next) => {
+    if (req?.headers?.authorization?.startsWith('Bearer')) {
+      const token = req.headers.authorization.split(' ')[1];
+      jwt.verify(token, process.env.JWT_SECRET, (err, decode) => {
+        if (!err && decode) {
+          req.user = decode;
+        }
+        next();
+      });
+    } else {
+      next();
+    }
+  });
+
+module.exports = { verifyAccessToken, isAdminOrManager, isStaff, optionalVerifyToken };

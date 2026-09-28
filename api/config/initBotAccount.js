@@ -1,4 +1,4 @@
-﻿const User = require('../models/userModel');
+const User = require('../models/userModel');
 
 /**
  * Tự động kiểm tra và khởi tạo tài khoản Bot Service Account cho MCP Server / AI Worker
@@ -16,24 +16,24 @@ const initBotAccount = async () => {
         email: botEmail,
         phone: '0900000000',
         password: botPassword,
-        role: 'staff',
+        role: 'manager',
         isVerified: true
       });
-      console.log(`[Bot Service Account] ✅ Khởi tạo tài khoản Bot AI thành công: ${botEmail} (role: staff)`);
+      console.log(`[Bot Service Account] ✅ Khởi tạo tài khoản Bot AI thành công: ${botEmail} (role: manager)`);
     } else {
-      // Đảm bảo bot luôn được verified và đúng role staff
+      // Đảm bảo bot luôn được verified và đúng role manager
       let needSave = false;
       if (!botUser.isVerified) {
         botUser.isVerified = true;
         needSave = true;
       }
-      if (botUser.role !== 'staff' && botUser.role !== 'manager') {
-        botUser.role = 'staff';
+      if (botUser.role !== 'manager' && botUser.role !== 'admin') {
+        botUser.role = 'manager';
         needSave = true;
       }
       if (needSave) {
         await botUser.save();
-        console.log(`[Bot Service Account] ✅ Cập nhật trạng thái Bot AI: ${botEmail} (isVerified: true, role: staff)`);
+        console.log(`[Bot Service Account] ✅ Cập nhật trạng thái Bot AI: ${botEmail} (isVerified: true, role: manager)`);
       }
     }
   } catch (err) {

@@ -47,15 +47,42 @@ const updateProduct = asyncHandler(async(req,res)=>{
   })
 })
 // xoá 1 sản phẩm
-
 const deleteProduct = asyncHandler(async(req,res)=>{
-  
         const {pid}=req.params
         await ProductService.deleteProduct(pid)
         res.status(200).json({ 
         success: true,
-        message: `đã xoá sản phẩm  thành công` });
-})
-module.exports ={
-    createProduct,getProducts,getProduct,updateProduct,deleteProduct
-}
+        message: `đã xoá sản phẩm thành công` });
+});
+
+// Truy xuất nguồn gốc chi tiết (5 Giai đoạn - Timeline Nông sản cho người quét mã QR)
+const getTraceability = asyncHandler(async(req, res) => {
+  const { pid } = req.params;
+  const traceData = await ProductService.getTraceabilityData(pid);
+  return res.status(200).json({
+    success: true,
+    message: 'Truy xuất nguồn gốc nông sản thành công',
+    data: traceData
+  });
+});
+
+// Xác thực tính toàn vẹn Blockchain
+const verifyIntegrity = asyncHandler(async(req, res) => {
+  const { pid } = req.params;
+  const verificationResult = await ProductService.verifyBlockchainIntegrity(pid);
+  return res.status(200).json({
+    success: true,
+    message: verificationResult.message,
+    data: verificationResult
+  });
+});
+
+module.exports = {
+  createProduct,
+  getProducts,
+  getProduct,
+  getTraceability,
+  verifyIntegrity,
+  updateProduct,
+  deleteProduct
+};

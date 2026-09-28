@@ -34,26 +34,56 @@ const productSchema = new mongoose.Schema({
   ],
   totalQuantity: {
     type: Number,
-    // required: true,
+    default: 0,
+  },
+  batchCode: {
+    type: String,
+    unique: true,
+    sparse: true,
+    trim: true,
   },
   harvestDate: {
     type: Date,
     default: Date.now,
   },
-  // blockchain: {
-  //   blockchainHash: {
-  //     type: String,
-  //     required: true,
-  //   },
-  //   transactionId: {
-  //     type: String,
-  //     required: true,
-  //   },
-  //   blockchainType: {
-  //     type: String,
-  //     required: true,
-  //   },
-  // },
+  image: {
+    type: String,
+    default: null,
+  },
+  qrCode: {
+    type: String, // DataURL Base64 hoặc URL ảnh Cloudinary
+    default: null,
+  },
+  blockchain: {
+    dataHash: {
+      type: String,
+      default: null,
+    },
+    txHash: {
+      type: String,
+      default: null,
+    },
+    contractAddress: {
+      type: String,
+      default: null,
+    },
+    network: {
+      type: String,
+      default: 'Sepolia Testnet / Provenance Ledger',
+    },
+    blockNumber: {
+      type: Number,
+      default: null,
+    },
+    recordedAt: {
+      type: Date,
+      default: null,
+    },
+    isVerified: {
+      type: Boolean,
+      default: true,
+    },
+  },
   qualityStatus: {
     type: String,
     enum: ['excellent', 'good', 'average', 'poor'],
@@ -61,6 +91,7 @@ const productSchema = new mongoose.Schema({
   },
   seedOrigin: {
     type: String,
+    default: 'Nhập khẩu chuẩn F1',
   },
   status: {
     type: String,
@@ -76,7 +107,7 @@ const productSchema = new mongoose.Schema({
     type: String,
   },
 },
-{  versionKey: false }); // loại bỏ __v của mongoose
+{ timestamps: true, versionKey: false }); // loại bỏ __v của mongoose
 productSchema.set('toObject', {
   transform: (doc, ret) => {
     delete ret.__v;
