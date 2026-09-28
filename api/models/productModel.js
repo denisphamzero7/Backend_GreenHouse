@@ -98,6 +98,31 @@ const productSchema = new mongoose.Schema({
     enum: ['processing', 'packaged', 'shipped', 'delivered'],
     default: 'processing',
   },
+  statusHistory: [
+    {
+      status: {
+        type: String,
+        enum: ['processing', 'packaged', 'shipped', 'delivered'],
+        required: true,
+      },
+      updatedAt: {
+        type: Date,
+        default: Date.now,
+      },
+      updatedBy: {
+        type: String,
+        default: 'System / Manager',
+      },
+      notes: {
+        type: String,
+        default: '',
+      },
+      location: {
+        type: String,
+        default: '',
+      },
+    },
+  ],
   unit: {
     type: String,
     enum: ['kg', 'bundle', 'piece'],

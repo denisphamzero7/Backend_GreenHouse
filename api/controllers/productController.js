@@ -34,16 +34,15 @@ const getProduct = asyncHandler(async(req,res)=>{
    
 })
 
-// cập nhật sản phẩm
-
+// cập nhật sản phẩm & trạng thái chuỗi cung ứng (processing -> packaged -> shipped -> delivered)
 const updateProduct = asyncHandler(async(req,res)=>{
-    
         const {pid}=req.params
         const updateData = req.body;
-        await ProductService.updateProduct(pid,updateData,req.file)
+        const updatedProduct = await ProductService.updateProduct(pid, updateData, req.file, req.user);
   return res.status(200).json({
     success:true,
-    message:'cập nhật thành công sản phẩm'
+    message:'cập nhật thành công sản phẩm',
+    product: updatedProduct
   })
 })
 // xoá 1 sản phẩm

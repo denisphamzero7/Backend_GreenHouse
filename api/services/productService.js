@@ -1,4 +1,4 @@
-﻿const crypto = require('crypto');
+const crypto = require('crypto');
 const Product = require('../models/productModel');
 const Bed = require('../models/bedsModel');
 const Vegetable = require('../models/vegetablesModel');
@@ -78,6 +78,7 @@ const createProduct = async (data, file) => {
   });
 
   // Tạo document sản phẩm ban đầu trong MongoDB
+  const initialStatus = status || 'processing';
   const newProduct = await Product.create({
     name,
     type,
@@ -89,7 +90,16 @@ const createProduct = async (data, file) => {
     unit,
     qualityStatus,
     seedOrigin,
-    status,
+    status: initialStatus,
+    statusHistory: [
+      {
+        status: initialStatus,
+        updatedAt: harvestDate || new Date(),
+        updatedBy: data.createdByName || 'Quản lý nhà kính',
+        notes: notes || 'Khởi tạo lô nông sản sau thu hoạch',
+        location: greenhouseName
+      }
+    ],
     notes,
     harvestDate: harvestDate || new Date(),
     batchCode,
@@ -282,15 +292,23 @@ const getTraceabilityData = async (pid) => {
     },
     {
       stage: 4,
-      code: "PACKAGING_AND_TRACE_QR",
-      title: "4. Đóng Gói & Cấp Mã Tem QR",
-      status: product.status === 'processing' ? 'IN_PROGRESS' : 'COMPLETED',
+      code: "SUPPLY_CHAIN_AND_TRACKING",
+      title: "4. Chuỗi Cung Ứng & Hành Trình Vận Chuyển",
+      status: product.status === 'delivered' ? 'COMPLETED' : (product.status === 'processing' ? 'IN_PROGRESS' : 'ON_THE_WAY'),
       details: {
+        currentStatus: product.status,
         batchCode: product.batchCode,
-        packageStatus: product.status,
         qrCodeUrl: product.qrCode,
         packagingNotes: product.notes || 'Đóng gói trong bao bì sinh học tự phân hủy',
-        expiryRecommendation: '3 - 5 ngày ở nhiệt độ 5 - 10°C'
+        expiryRecommendation: '3 - 5 ngày ở nhiệt độ 5 - 10°C',
+        supplyChainJourney: product.statusHistory && product.statusHistory.length > 0 ? product.statusHistory : [
+          {
+            status: product.status,
+            updatedAt: product.createdAt,
+            updatedBy: 'Quản lý nhà kính',
+            notes: product.notes || 'Khởi tạo lô nông sản sau thu hoạch'
+          }
+        ]
       }
     },
     {
@@ -320,6 +338,7 @@ const getTraceabilityData = async (pid) => {
     qrCode: product.qrCode,
     currentStatus: product.status,
     qualityStatus: product.qualityStatus,
+    statusHistory: product.statusHistory,
     timeline
   };
 };
@@ -376,9 +395,9 @@ const verifyBlockchainIntegrity = async (pid) => {
 };
 
 /**
- * 6. Cập nhật sản phẩm
+ * 6. Cập nhật sản phẩm & Tự động lưu vết lịch sử chuỗi cung ứng (Supply Chain Tracking)
  */
-const updateProduct = async (pid, data, file) => {
+const updateProduct = async (pid, data, file, currentUser) => {
   if (file) {
     data.image = file.path;
   }
@@ -386,7 +405,43 @@ const updateProduct = async (pid, data, file) => {
   if (!existing) {
     throw new apiError(404, 'pid', 'Không tìm thấy sản phẩm cần cập nhật');
   }
-  const updatedData = await Product.findByIdAndUpdate(pid, data, { new: true });
+
+  // Tự động lưu vết lịch sử nếu có cập nhật trạng thái chuỗi cung ứng
+  if (data.status) {
+    const newStatus = data.status;
+    const updaterName = currentUser?.name || currentUser?.email || 'Quản lý / Vận chuyển';
+    
+    let defaultNote = '';
+    if (newStatus === 'packaged') defaultNote = 'Đã hoàn tất đóng gói, in dán tem QR Code';
+    else if (newStatus === 'shipped') defaultNote = 'Đã bàn giao xe lạnh chuyên dụng xuất kho';
+    else if (newStatus === 'delivered') defaultNote = 'Đã giao hàng đến điểm bán lẻ/siêu thị và ký nhận đủ số lượng';
+    else defaultNote = 'Cập nhật trạng thái chuỗi cung ứng';
+
+    const statusNote = data.notes || defaultNote;
+    const location = data.location || (newStatus === 'delivered' ? (data.receiver || 'Điểm giao hàng') : '');
+
+    // Đẩy bản ghi mới vào mảng statusHistory
+    if (!existing.statusHistory) {
+      existing.statusHistory = [];
+    }
+    existing.statusHistory.push({
+      status: newStatus,
+      updatedAt: new Date(),
+      updatedBy: updaterName,
+      notes: statusNote,
+      location: location
+    });
+
+    existing.status = newStatus;
+  }
+
+  // Cập nhật các trường thông tin khác nếu có
+  const updateableFields = ['name', 'type', 'totalQuantity', 'unit', 'qualityStatus', 'seedOrigin', 'notes', 'image'];
+  updateableFields.forEach(field => {
+    if (data[field] !== undefined) existing[field] = data[field];
+  });
+
+  const updatedData = await existing.save();
   return updatedData;
 };
 
