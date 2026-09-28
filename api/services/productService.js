@@ -45,6 +45,7 @@ const createProduct = async (data, file) => {
   // Lấy ảnh upload nếu có
   const image = file ? file.path : (data.image || null);
   const actualQuantity = totalQuantity || quantity || 0;
+  const actualHarvestDate = harvestDate ? new Date(harvestDate) : new Date();
 
   // Lấy thông tin bổ trợ để tạo mã băm phả hệ
   const [cropDoc, greenhouseDoc, categoryDoc, bedDocs] = await Promise.all([
@@ -70,7 +71,7 @@ const createProduct = async (data, file) => {
     categoryName,
     greenhouseName,
     seedOrigin,
-    harvestDate: harvestDate || new Date(),
+    harvestDate: actualHarvestDate,
     qualityStatus,
     totalQuantity: actualQuantity,
     unit,
@@ -94,14 +95,14 @@ const createProduct = async (data, file) => {
     statusHistory: [
       {
         status: initialStatus,
-        updatedAt: harvestDate || new Date(),
+        updatedAt: actualHarvestDate,
         updatedBy: data.createdByName || 'Quản lý nhà kính',
         notes: notes || 'Khởi tạo lô nông sản sau thu hoạch',
         location: greenhouseName
       }
     ],
     notes,
-    harvestDate: harvestDate || new Date(),
+    harvestDate: actualHarvestDate,
     batchCode,
     image,
     blockchain: {
